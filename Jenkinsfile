@@ -3,6 +3,7 @@ pipeline {
 
     parameters {
         booleanParam(name: 'autoApprove', defaultValue: false, description: 'Automatically run apply after generating plan?')
+        choice(name: 'ACCION', choices: ['', 'yes', 'no'], description: 'please select the option to destroy the resources')
     } 
     environment {
         AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
@@ -48,6 +49,21 @@ pipeline {
         stage('Apply') {
             steps {
                 sh "pwd;cd terraform/ ; terraform apply -input=false tfplan"
+            }
+        }
+        
+       stage('Destroy') {
+            steps {
+                sh 'echo "destroying the resources"'
+                script{
+                    if(params.ACCION == 'yes'){
+                        sh "pwd;cd terraform/ ; terraform destroy -auto-approve"
+                    }
+                    else
+                    {
+                        sh 'echo "resources destroyed sucessfully"'
+                    }
+                }                
             }
         }
     }
