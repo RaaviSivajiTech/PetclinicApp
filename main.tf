@@ -32,6 +32,12 @@ resource "aws_security_group" "My_VPC_Security_Group" {
     to_port     = 22
     protocol    = "tcp"
   }
+  ingress {
+    cidr_blocks = var.ingressCIDRblock
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+  }
 
   # allow egress of all ports
   egress {
@@ -166,6 +172,7 @@ resource "aws_instance" "web_server" {
   instance_type = var.aws_instance_type
   key_name      = var.aws_key_name
   subnet_id     = aws_subnet.public_subnets["public_subnet_1"].id
+  user_data = file("${path.cwd}/user_data.sh")
   tags = {
     Name = var.web_server_name
   } 
